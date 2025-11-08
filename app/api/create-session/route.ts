@@ -11,6 +11,7 @@ interface CreateSessionRequestBody {
       enabled?: boolean;
     };
   };
+  objective?: string | null;
 }
 
 const DEFAULT_CHATKIT_BASE = "https://api.openai.com";
@@ -42,6 +43,10 @@ export async function POST(request: Request): Promise<Response> {
     sessionCookie = resolvedSessionCookie;
     const resolvedWorkflowId =
       parsedBody?.workflow?.id ?? parsedBody?.workflowId ?? WORKFLOW_ID;
+    const objective =
+      typeof parsedBody?.objective === "string"
+        ? parsedBody.objective
+        : null;
 
     if (process.env.NODE_ENV !== "production") {
       console.info("[create-session] handling request", {
@@ -61,6 +66,21 @@ export async function POST(request: Request): Promise<Response> {
 
     const apiBase = process.env.CHATKIT_API_BASE ?? DEFAULT_CHATKIT_BASE;
     const url = `${apiBase}/v1/chatkit/sessions`;
+    const requestBody: Record<string, unknown> = {
+      workflow: { id: resolvedWorkflowId },
+      user: userId,
+      chatkit_configuration: {
+        file_upload: {
+          enabled:
+            parsedBody?.chatkit_configuration?.file_upload?.enabled ?? false,
+        },
+      },
+    };
+
+    if (objective) {
+      requestBody.metadata = { objective };
+    }
+
     const upstreamResponse = await fetch(url, {
       method: "POST",
       headers: {
@@ -68,16 +88,7 @@ export async function POST(request: Request): Promise<Response> {
         Authorization: `Bearer ${openaiApiKey}`,
         "OpenAI-Beta": "chatkit_beta=v1",
       },
-      body: JSON.stringify({
-        workflow: { id: resolvedWorkflowId },
-        user: userId,
-        chatkit_configuration: {
-          file_upload: {
-            enabled:
-              parsedBody?.chatkit_configuration?.file_upload?.enabled ?? false,
-          },
-        },
-      }),
+      body: JSON.stringify(requestBody),
     });
 
     if (process.env.NODE_ENV !== "production") {
