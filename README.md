@@ -4,12 +4,13 @@
 ![NextJS](https://img.shields.io/badge/Built_with-NextJS-blue)
 ![OpenAI API](https://img.shields.io/badge/Powered_by-OpenAI_API-orange)
 
-This repository is the simplest way to bootstrap a [ChatKit](http://openai.github.io/chatkit-js/) application. It ships with a minimal Next.js UI, the ChatKit web component, and a ready-to-use session endpoint so you can experiment with OpenAI-hosted workflows built using [Agent Builder](https://platform.openai.com/agent-builder).
+This repository bootstraps a [ChatKit](http://openai.github.io/chatkit-js/) learning experience. It now includes a full PDF-to-lesson workflow with Socratic chats, quizzes, and progress tracking powered by Agent Builder.
 
 ## What You Get
 
 - Next.js app with `<openai-chatkit>` web component and theming controls
-- API endpoint for creating a session at [`app/api/create-session/route.ts`](app/api/create-session/route.ts)
+- Guided upload → lesson generation → objective navigation → Socratic chat → quiz flow
+- API endpoints for creating a session at [`app/api/create-session/route.ts`](app/api/create-session/route.ts) and generating lessons at [`app/api/generate-lesson/route.ts`](app/api/generate-lesson/route.ts)
 - Config file for starter prompts, theme, placeholder text, and greeting message
 
 ## Getting Started
@@ -39,7 +40,7 @@ You can get your OpenAI API key from the [OpenAI API Keys](https://platform.open
 Update `.env.local` with the variables that match your setup.
 
 - `OPENAI_API_KEY` — This must be an API key created **within the same org & project as your Agent Builder**. If you already have a different `OPENAI_API_KEY` env variable set in your terminal session, that one will take precedence over the key in `.env.local` one (this is how a Next.js app works). So, **please run `unset OPENAI_API_KEY` (`set OPENAI_API_KEY=` for Windows OS) beforehand**.
-- `NEXT_PUBLIC_CHATKIT_WORKFLOW_ID` — This is the ID of the workflow you created in [Agent Builder](https://platform.openai.com/agent-builder), which starts with `wf_...`
+- `NEXT_PUBLIC_SOCRATIC_WORKFLOW_ID` — This is the ID of the workflow you created in [Agent Builder](https://platform.openai.com/agent-builder), which starts with `wf_...`
 - (optional) `CHATKIT_API_BASE` - This is a customizable base URL for the ChatKit API endpoint
 
 > Note: if your workflow is using a model requiring organization verification, such as GPT-5, make sure you verify your organization first. Visit your [organization settings](https://platform.openai.com/settings/organization/general) and click on "Verify Organization".
